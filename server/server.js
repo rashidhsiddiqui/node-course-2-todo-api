@@ -11,6 +11,7 @@ var app = express();
 //Use body Parser to parse the request in JSON
 app.use(bodyParser.json());
 
+//POST todos
 app.post("/todos", (req, res) => {
   var todo = new Todo({
     text: req.body.text //taking text from request body
@@ -18,6 +19,15 @@ app.post("/todos", (req, res) => {
 
   todo.save().then((doc) => {
     res.status(200).send(doc);
+  }, (e) => {
+    res.status(400).send(e);
+  });
+});
+
+//GET todos
+app.get("/todos", (req, res) => {
+  Todo.find().then((todos) => {
+    res.send({todos});
   }, (e) => {
     res.status(400).send(e);
   });
