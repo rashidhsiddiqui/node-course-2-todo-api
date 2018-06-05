@@ -27,6 +27,8 @@ app.listen(3000, () => {
   console.log("Started listening to port 3000");
 });
 
+module.exports = { app };
+
 // var newTodo = new Todo({
 //   text: "Some work to do",
 //   completed: false
