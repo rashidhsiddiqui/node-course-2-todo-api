@@ -3,6 +3,8 @@ var bodyParser = require("body-parser");
 
 const {ObjectID} = require("mongodb");
 
+const port = process.env.PORT || 3000;
+
 //Local libraries
 var {mongoose} = require("./db/mongoose.js");
 var {Todo} = require("./models/todo.js");
@@ -56,8 +58,8 @@ app.get("/todos/:id", (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log("Started listening to port 3000");
+app.listen(port, () => {
+  console.log(`Started listening to port ${port}`);
 });
 
 module.exports = { app };
