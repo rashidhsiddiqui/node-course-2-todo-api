@@ -1,6 +1,6 @@
-var express = require("express");
-var bodyParser = require("body-parser");
-
+const _ = require("lodash"); //Javascript utility functions library
+const express = require("express");
+const bodyParser = require("body-parser");
 const {ObjectID} = require("mongodb");
 
 const port = process.env.PORT || 3000;
@@ -76,6 +76,38 @@ app.delete("/todos/:id", (req, res) => {
     res.send({todo});
   }).catch((e) => {
     res.status(400).send(e);
+  });
+});
+
+//Update todos/id
+app.patch("/todos/:id", (req, res) => {
+  var id = req.params.id;
+
+  //pick only subset of things 2 properties from request body
+  var body = _.pick(req.body, ['text', 'completed']);
+
+  if(!ObjectID.isValid(id)){
+    return res.status(404).send();
+  }
+
+  //if completed is true from user, then we are setting completedAt to current timestamp
+  if(_.isBoolean(body.completed) && body.completed){
+    body.completedAt = new Date().getTime();
+  }
+  else{
+    body.completed = false;
+    body.completedAt = null;
+  }
+
+  //$set will accept the body of model that will update only for the selected id
+  Todo.findByIdAndUpdate(id, {$set:body}, {new: true}).then((todo) => {
+    if(!todo){
+      return res.status(404).send();
+    }
+
+    res.send({todo});
+  }).catch((ex) => {
+    res.status(400).send(ex);
   });
 });
 
