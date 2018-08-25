@@ -111,6 +111,29 @@ app.patch("/todos/:id", (req, res) => {
   });
 });
 
+//POST /users
+app.post("/users", (req, res) => {
+
+  //pick only subset of things 2 properties from request body
+  var body = _.pick(req.body, ['email', 'password']);
+
+  var user = new User({
+    email: body.email, //taking text from request body
+    password: body.password
+  });
+
+  user.save().then((doc) => {
+
+    return user.generateAuthToken();
+    //res.status(200).send(doc);
+
+  }).then((token) => { //This then statement is for chain promise returning from generateAuthToken function
+    res.header("x-auth", token).status(200).send(user); //x- is used for custom header
+  }).catch((e) => {
+    res.status(400).send(e);
+  });
+});
+
 app.listen(port, () => {
   console.log(`Started listening to port ${port}`);
 });
