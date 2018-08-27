@@ -9,7 +9,8 @@ const port = process.env.PORT || 3000;
 var {mongoose} = require("./db/mongoose.js");
 var {Todo} = require("./models/todo.js");
 var {User} = require("./models/user.js");
-
+var {authenticate} = require("./middleware/authenticate.js");
+//
 var app = express();
 
 //Use body Parser to parse the request in JSON
@@ -132,6 +133,12 @@ app.post("/users", (req, res) => {
   }).catch((e) => {
     res.status(400).send(e);
   });
+});
+
+//Private route example
+//authenticate is behaving like a middleware function
+app.get("/users/me", authenticate, (req, res) => { //authenticate is auth middleware function residing inside server/middleware/authenticate.js
+  res.send(req.user);
 });
 
 app.listen(port, () => {

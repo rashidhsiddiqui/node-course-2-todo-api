@@ -51,10 +51,32 @@ UserSchema.methods.generateAuthToken = function() {
   //This code may cause exceptions. Instead we are using concat
   //user.tokens.push({access, token});
 
-  //In order to return the toen to be used by the server.js save function,
-  //we are using return with user.save for chaining the promise
+  //In order to return the token to be used by the server.js save function,
+  //we are using return with user.save for chaining the promise and use in server.js
   return user.save().then(() => {
     return token;
+  });
+};
+
+//Model method starts with "statics" unlike instance method that starts with "methods"
+UserSchema.statics.findByToken = function(token) {
+  var User = this;
+  var decoded;
+
+  try{
+    decoded = jwt.verify(token, "abc123");
+  }
+  catch(e){
+    // return new Promise((resolve, reject) => {
+    //   reject();
+    // };
+    return Promise.reject();
+  }
+
+  return User.findOne({
+    _id: decoded._id,
+    "tokens.token": token,
+    "tokens.access": "auth"
   });
 };
 
