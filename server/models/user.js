@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
+const bcrypt = require("bcryptjs");
 
 var UserSchema = new mongoose.Schema({
     email: {
@@ -79,6 +80,26 @@ UserSchema.statics.findByToken = function(token) {
     "tokens.access": "auth"
   });
 };
+
+//Middle ware event of pre saving and it will run before saving a document
+UserSchema.pre("save", function (next) {
+  var user = this;
+
+  //isModified will check that if before saving document to database the following property is modified or not
+  if(user.isModified("password"))
+  {
+    //Change plain text password with hashed password in model and ready to save it in database
+    bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(user.password, salt, (err, hash) => {
+        user.password = hash;
+        next();
+      });
+    });
+  }
+  else{
+    next();
+  }
+});
 
 //Model for User database object. Collection name will create with Plural like Users
 var User = mongoose.model("User", UserSchema);
