@@ -1,9 +1,9 @@
+require('./config/config');
+
 const _ = require("lodash"); //Javascript utility functions library
 const express = require("express");
 const bodyParser = require("body-parser");
 const {ObjectID} = require("mongodb");
-
-const port = process.env.PORT || 3000;
 
 //Local libraries
 var {mongoose} = require("./db/mongoose.js");
@@ -12,6 +12,7 @@ var {User} = require("./models/user.js");
 var {authenticate} = require("./middleware/authenticate.js");
 //
 var app = express();
+const port = process.env.PORT || 3000;
 
 //Use body Parser to parse the request in JSON
 app.use(bodyParser.json());
@@ -125,7 +126,7 @@ app.post("/users", (req, res) => {
 
   user.save().then((doc) => {
 
-    return user.generateAuthToken();
+    return user.generateAuthToken(); //it will give back generated token to below then statement
     //res.status(200).send(doc);
 
   }).then((token) => { //This then statement is for chain promise returning from generateAuthToken function
