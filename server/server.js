@@ -142,6 +142,22 @@ app.get("/users/me", authenticate, (req, res) => { //authenticate is auth middle
   res.send(req.user);
 });
 
+//existing user login info
+app.post("/users/login", (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+
+  User.findByCredentials(body).then((user) => {
+
+    return user.generateAuthToken().then((token) => {
+      res.header("x-auth", token).status(200).send(user); //x- is used for custom header
+    }).catch((ex) => {
+      res.status(400).send(ex);
+    });
+  }).catch((ex) => {
+    res.status(400).send(ex);
+  });
+});
+
 app.listen(port, () => {
   console.log(`Started listening to port ${port}`);
 });

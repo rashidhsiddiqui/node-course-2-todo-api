@@ -81,6 +81,38 @@ UserSchema.statics.findByToken = function(token) {
   });
 };
 
+//Model method
+UserSchema.statics.findByCredentials = function(credentials) {
+  var User = this;
+
+  return User.findOne({email: credentials.email}).then((user) => {
+
+    if(!user){
+      return Promise.reject(); //this reject will call exception in the caller function
+    }
+
+    //we have to use new Promise here because we have to use hash password and it does not support default Promise
+    return new Promise((resolve, reject) => {
+
+      bcrypt.compare(credentials.password, user.password, (err, result) => {
+
+        if(err) {
+          return reject();
+        }
+
+        if(result) {
+          resolve(user);
+        }
+        else {
+          reject();
+        }
+
+      });
+
+    });
+  });
+};
+
 //Middle ware event of pre saving and it will run before saving a document
 UserSchema.pre("save", function (next) {
   var user = this;
