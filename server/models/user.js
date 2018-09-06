@@ -59,6 +59,20 @@ UserSchema.methods.generateAuthToken = function() {
   });
 };
 
+//Instance method. We are not using arrow function here because this keyword not support/bind by arrow function
+UserSchema.methods.removeToken = function(token) {
+  var user = this;
+
+  //call update to remove token and update user collection
+  return user.update({
+
+    //$pull is used to remove item from an item array that matches criteria
+    $pull: {
+      tokens: {token} //in this case it is matching token inside tokens array
+    }
+  });
+};
+
 //Model method starts with "statics" unlike instance method that starts with "methods"
 UserSchema.statics.findByToken = function(token) {
   var User = this;

@@ -139,7 +139,7 @@ app.post("/users", (req, res) => {
 //Private route example
 //authenticate is behaving like a middleware function
 app.get("/users/me", authenticate, (req, res) => { //authenticate is auth middleware function residing inside server/middleware/authenticate.js
-  res.send(req.user);
+  res.send(req.user); //req.user is coming from authenticate middleware
 });
 
 //existing user login info
@@ -155,6 +155,16 @@ app.post("/users/login", (req, res) => {
     });
   }).catch((ex) => {
     res.status(400).send(ex);
+  });
+});
+
+//Private route - delete token for Logged Out user
+app.delete("/users/me/token", authenticate, (req, res) => {
+  //Instance method - req.user is coming from authenticate middleware
+  req.user.removeToken(req.token).then(() => {
+    res.status(200).send();
+  }, () => {
+    res.status(401).send();
   });
 });
 
